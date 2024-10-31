@@ -2,34 +2,35 @@
 #include <sstream>
 
 namespace cxc {
-    //constructor for Httpreesponse 
-    HttpResponse::HttpResponse(int status_code, const std::string& body) : http_version("HTTP/1.1"), status_code(status_code), body(body) {
-        // set default status messages 
+    // Constructor for HttpResponse
+    HttpResponse::HttpResponse(int status_code, const std::string& body)
+        : http_version("HTTP/1.1"), status_code(status_code), body(body) {
+        // Set default status messages
         if (status_code == 200) status_message = "OK";
         else if (status_code == 404) status_message = "Not Found";
-        else status_message = "unknoiwn status";
+        else status_message = "Unknown Status";
 
-        //Add default headers 
-        headers["content-Length"] = std::to_string(body.size());
-        headers["content-Type"] = "text/plain";
+        // Add default headers
+        headers["Content-Length"] = std::to_string(body.size());
+        headers["Content-Type"] = "text/plain";
     }
 
-    //convert response to raw HTTP resposne string 
+    // Convert response to raw HTTP response string
     std::string HttpResponse::to_string() const {
         std::ostringstream response_stream;
 
-        //status line 
-        response_stream << http_version << " " << status_code << " " << status_message <<"\r\n";
+        // Status line
+        response_stream << http_version << " " << status_code << " " << status_message << "\r\n";
 
-        //Headers
-        for (const auto& [key, value] : headers) {
-            response_stream << key << ": " << value << "\r\n";
+        // Headers
+        for (auto it = headers.begin(); it != headers.end(); ++it) {
+            response_stream << it->first << ": " << it->second << "\r\n";
         }
 
-        //Blank Line between headers and body
+        // Blank line between headers and body
         response_stream << "\r\n";
 
-        //Body
+        // Body
         response_stream << body;
 
         return response_stream.str();
